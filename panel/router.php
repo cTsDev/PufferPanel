@@ -20,6 +20,8 @@
 
 namespace PufferPanel\Core;
 
+session_start();
+
 require_once('../src/core/core.php');
 
 $klein = new \Klein\Klein();

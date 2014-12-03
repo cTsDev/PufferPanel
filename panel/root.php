@@ -72,8 +72,9 @@ $klein->respond('POST', '/index', function($request, $response, $service, $app) 
 	} else if($request->param('do') == 'login') {
 
 		/* XSRF Check */
-		if($core->auth->XSRF($request->param('xsrf')) !== true) {
-			$response->redirect('/index?error=token', 302)->send();
+		if(!$core->auth->XSRF($request->param('xsrf'))) {
+			echo $request->param('xsrf');
+			//$response->redirect('/index?error=token', 302)->send();
 			return;
 		}
 
@@ -182,10 +183,10 @@ $klein->respond('GET', '/servers', function($request, $response) use ($core, $tw
 	));
 });
 
-$klein->respond('GET', '/totp', function($request, $response, $service, $app) use ($twig, $pageStartTime) {
+$klein->respond('GET', '/totp', function() use ($core, $twig, $pageStartTime) {
 	echo $twig->render('panel/totp.html', array(
 		'totp' => array(
-			'enabled' => $app->core->user->getData('use_totp')
+			'enabled' => $core->user->getData('use_totp')
 		),
 		'footer' => array(
 			'seconds' => number_format((microtime(true) - $pageStartTime), 4)
@@ -193,9 +194,9 @@ $klein->respond('GET', '/totp', function($request, $response, $service, $app) us
 	));
 });
 
-$klein->respond('GET', '/register', function($request, $response, $service, $app) use ($twig, $pageStartTime) {
+$klein->respond('GET', '/register', function() use ($core, $twig, $pageStartTime) {
 	echo $twig->render('panel/register.html', array(
-			'xsrf' => $app->core->auth->XSRF(),
+			'xsrf' => $core->auth->XSRF(),
 			'footer' => array(
 				'seconds' => number_format((microtime(true) - $pageStartTime), 4)
 		)
